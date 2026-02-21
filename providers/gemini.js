@@ -5,7 +5,7 @@
 const GeminiProvider = {
   name: "Google Gemini",
   apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models",
-  defaultModel: "gemini-1.5-flash",
+  defaultModel: "gemini-2.0-flash",
 
   /**
    * Generate summary using Google Gemini API
@@ -57,16 +57,10 @@ const GeminiProvider = {
       let apiErrorMessage = null;
       try {
         const errorData = await response.json();
-        apiErrorMessage = errorData.error?.message;
-        console.error("[Gemini API Error]", {
-          status: response.status,
-          errorData: errorData,
-        });
+        apiErrorMessage = errorData.error?.message || null;
+        console.error(`[Gemini API Error] HTTP ${response.status}: ${apiErrorMessage || response.statusText}`);
       } catch (parseErr) {
-        console.error("[Gemini API Error - Non-JSON Response]", {
-          status: response.status,
-          statusText: response.statusText,
-        });
+        console.error(`[Gemini API Error] HTTP ${response.status}: ${response.statusText} (non-JSON response)`);
       }
       throw { httpStatus: response.status, message: apiErrorMessage };
     }
@@ -76,7 +70,7 @@ const GeminiProvider = {
     // Gemini response structure: data.candidates[0].content.parts[0].text
     if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
       console.error("[Gemini Invalid Response]", { data });
-      throw new Error("Invalid response structure from Gemini");
+      throw { httpStatus: 500, message: "Invalid response structure from Gemini" };
     }
 
     return data.candidates[0].content.parts[0].text;

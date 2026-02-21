@@ -1,92 +1,98 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Page Summarizer</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>📝 AI Blog or Docs Summarizer</h1>
 
-      <div id="settings-section">
-        <div class="input-group">
-          <label for="ai-provider">AI Provider</label>
-          <select id="ai-provider">
-            <option value="openai" selected>OpenAI (GPT-4)</option>
-            <option value="gemini">Google Gemini</option>
-            <option value="claude">Claude (Anthropic)</option>
-          </select>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Page Summarizer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
 
-        <div class="input-group api-key-group" id="openai-key-group">
-          <label for="openai-api-key">OpenAI API Key</label>
-          <input type="password" id="openai-api-key" placeholder="sk-..." />
-          <button id="save-openai-key" class="btn-secondary">Save Key</button>
-        </div>
+<body>
+  <div class="container">
+    <h1>📝 AI Blog or Docs Summarizer</h1>
 
-        <div class="input-group api-key-group hidden" id="gemini-key-group">
-          <label for="gemini-api-key">Google Gemini API Key</label>
-          <input type="password" id="gemini-api-key" placeholder="AI..." />
-          <button id="save-gemini-key" class="btn-secondary">Save Key</button>
-        </div>
-
-        <div class="input-group api-key-group hidden" id="claude-key-group">
-          <label for="claude-api-key">Claude API Key</label>
-          <input type="password" id="claude-api-key" placeholder="sk-ant-..." />
-          <button id="save-claude-key" class="btn-secondary">Save Key</button>
-        </div>
-
-        <p id="key-status" class="status"></p>
+    <div id="settings-section">
+      <div class="input-group">
+        <label for="ai-provider">AI Provider</label>
+        <select id="ai-provider">
+          <option value="openai" selected>OpenAI (GPT-4)</option>
+          <option value="gemini">Google Gemini</option>
+          <option value="claude">Claude (Anthropic)</option>
+        </select>
       </div>
 
-      <div id="summary-section">
-        <div class="input-group">
-          <label for="summary-type">Summary Type</label>
-          <select id="summary-type">
-            <option value="brief">Brief (2-3 sentences)</option>
-            <option value="detailed" selected>Detailed (bullet points)</option>
-            <option value="technical">Technical (for docs)</option>
-          </select>
-        </div>
+      <div class="input-group api-key-group" id="openai-key-group">
+        <label for="openai-api-key">OpenAI API Key</label>
+        <input type="password" id="openai-api-key" placeholder="sk-..." />
+        <button id="save-openai-key" class="btn-secondary">Save Key</button>
+      </div>
 
-        <button id="summarize-btn" class="btn-primary">
-          <span id="btn-text">Summarize This Page</span>
-          <span id="loader" class="loader hidden"></span>
-        </button>
+      <div class="input-group api-key-group hidden" id="gemini-key-group">
+        <label for="gemini-api-key">Google Gemini API Key</label>
+        <input type="password" id="gemini-api-key" placeholder="AI..." />
+        <button id="save-gemini-key" class="btn-secondary">Save Key</button>
+      </div>
 
-        <div id="result-container" class="hidden">
-          <h2>Summary</h2>
-          <div id="summary-result"></div>
-          <div id="copy-btn-container">
-            <button id="copy-md-btn" class="btn-secondary">
-              Copy as Markdown
-            </button>
-            <button id="copy-plain-btn" class="btn-secondary">
-              Copy as Plain Text
-            </button>
-          </div>
-          <button id="clear-summary-btn" class="btn-secondary">
-            Clear Summary
+      <div class="input-group api-key-group hidden" id="claude-key-group">
+        <label for="claude-api-key">Claude API Key</label>
+        <input type="password" id="claude-api-key" placeholder="sk-ant-..." />
+        <button id="save-claude-key" class="btn-secondary">Save Key</button>
+      </div>
+
+      <p id="key-status" class="status"></p>
+    </div>
+
+    <div id="summary-section">
+      <div class="input-group">
+        <label for="summary-type">Summary Type</label>
+        <select id="summary-type">
+          <option value="brief">Brief (2-3 sentences)</option>
+          <option value="detailed" selected>Detailed (bullet points)</option>
+          <option value="technical">Technical (for docs)</option>
+        </select>
+      </div>
+
+      <button id="summarize-btn" class="btn-primary">
+        <span id="btn-text">Summarize This Page</span>
+        <span id="loader" class="loader hidden"></span>
+      </button>
+
+      <div id="result-container" class="hidden">
+        <h2>Summary</h2>
+        <div id="summary-result"></div>
+        <div id="copy-btn-container">
+          <button id="copy-md-btn" class="btn-secondary">
+            Copy as Markdown
+          </button>
+          <button id="copy-plain-btn" class="btn-secondary">
+            Copy as Plain Text
+          </button>
+          <button id="download-md-btn" class="btn-secondary">
+            ⬇️ Download as .md
           </button>
         </div>
+        <button id="clear-summary-btn" class="btn-secondary">
+          Clear Summary
+        </button>
+      </div>
 
-        <p id="error-msg" class="error hidden"></p>
-      </div>
+      <p id="error-msg" class="error hidden"></p>
     </div>
-    <div id="history-section" class="hidden">
-      <div class="section-header">
-        <h2>Recent Summaries</h2>
-        <button id="clear-history-btn" class="btn-text">Clear History</button>
-      </div>
-      <div id="history-list"></div>
+  </div>
+  <div id="history-section" class="hidden">
+    <div class="section-header">
+      <h2>Recent Summaries</h2>
+      <button id="clear-history-btn" class="btn-text">Clear History</button>
     </div>
-    <script src="marked.umd.js"></script>
-    <script src="purify.min.js"></script>
-    <script src="providers/openai.js"></script>
-    <script src="providers/gemini.js"></script>
-    <script src="providers/claude.js"></script>
-    <script src="popup.js"></script>
-  </body>
+    <div id="history-list"></div>
+  </div>
+  <script src="marked.umd.js"></script>
+  <script src="purify.min.js"></script>
+  <script src="providers/openai.js"></script>
+  <script src="providers/gemini.js"></script>
+  <script src="providers/claude.js"></script>
+  <script src="popup.js"></script>
+</body>
+
 </html>
