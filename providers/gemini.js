@@ -7,7 +7,7 @@ const GeminiProvider = {
   name: "Google Gemini",
   apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models",
   defaultModel: "gemini-2.5-flash",
-
+  supportsMultimodal: true,
   /**
    * Fetch an image URL and convert it to base64 for the Gemini inline_data format
    * @param {string} url - Image URL

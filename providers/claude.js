@@ -7,6 +7,7 @@ const ClaudeProvider = {
   name: "Claude (Anthropic)",
   apiEndpoint: "https://api.anthropic.com/v1/messages",
   defaultModel: "claude-sonnet-4-6",
+  supportsMultimodal: true,
 
   /**
    * Generate summary using Claude API (with optional image context)
