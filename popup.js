@@ -4,6 +4,95 @@ const $ = (id) => document.getElementById(id);
 let summary = null;
 
 // ============================================================================
+// WORD COUNT & READING TIME UTILITIES
+// ============================================================================
+
+/**
+ * Count words in a text string
+ * @param {string} text - The text to count words in
+ * @returns {number} - Number of words
+ */
+function countWords(text) {
+  if (!text || typeof text !== 'string') return 0;
+  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+}
+
+/**
+ * Calculate estimated reading time based on word count
+ * Uses average reading speed of 200 words per minute
+ * @param {number} wordCount - Number of words
+ * @returns {string} - Formatted reading time string
+ */
+function calculateReadingTime(wordCount) {
+  const wordsPerMinute = 200;
+  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  
+  if (minutes < 1) {
+    return '< 1 min';
+  } else if (minutes === 1) {
+    return '1 min';
+  } else {
+    return `${minutes} mins`;
+  }
+}
+
+/**
+ * Format word count with proper separator
+ * @param {number} count - Word count
+ * @returns {string} - Formatted word count string
+ */
+function formatWordCount(count) {
+  return count.toLocaleString();
+}
+
+/**
+ * Update content stats display (before summarization)
+ * @param {string} content - The extracted page content
+ */
+function updateContentStats(content) {
+  const contentStatsEl = $('content-stats');
+  if (!contentStatsEl) return;
+  
+  const wordCount = countWords(content);
+  const readingTime = calculateReadingTime(wordCount);
+  
+  contentStatsEl.innerHTML = `
+    <span class="stat-item">
+      <span class="stat-label">Words:</span>
+      <span class="stat-value">${formatWordCount(wordCount)}</span>
+    </span>
+    <span class="stat-item">
+      <span class="stat-label">Reading time:</span>
+      <span class="stat-value">${readingTime}</span>
+    </span>
+  `;
+  contentStatsEl.classList.remove('hidden');
+}
+
+/**
+ * Update summary stats display (after summarization)
+ * @param {string} summaryText - The generated summary
+ */
+function updateSummaryStats(summaryText) {
+  const summaryStatsEl = $('summary-stats');
+  if (!summaryStatsEl) return;
+  
+  const wordCount = countWords(summaryText);
+  const readingTime = calculateReadingTime(wordCount);
+  
+  summaryStatsEl.innerHTML = `
+    <span class="stat-item">
+      <span class="stat-label">Words:</span>
+      <span class="stat-value">${formatWordCount(wordCount)}</span>
+    </span>
+    <span class="stat-item">
+      <span class="stat-label">Reading time:</span>
+      <span class="stat-value">${readingTime}</span>
+    </span>
+  `;
+}
+
+// ============================================================================
 // ERROR HANDLING SYSTEM
 // ============================================================================
 
@@ -281,6 +370,9 @@ async function summarizePage() {
       pageContent = extractedContent.text;
       extractedImages = extractedContent.images || [];
 
+      // Display content word count and reading time
+      updateContentStats(pageContent);
+
       // Show image indicator
       const providerObj = {
         openai: window.OpenAIProvider,
@@ -335,6 +427,9 @@ async function summarizePage() {
     // Safely inject sanitized HTML into the UI
     $("summary-result").innerHTML = cleanHTML;
     $("result-container").classList.remove("hidden");
+
+    // Display summary word count and reading time
+    updateSummaryStats(summary);
 
     // Save to history
     saveSummary(summary, tab.title, tab.url, summaryType);
@@ -732,4 +827,3 @@ async function clearHistory() {
     renderHistory([]);
   }
 }
-
